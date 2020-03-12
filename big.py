@@ -12,9 +12,53 @@ import urllib.parse
 import base64
 import json
 import re
+
+
 import sys
+import getopt
 
 
+def main(argv):
+    username = ""
+    password = ""
+
+    try:
+        """
+            options, args = getopt.getopt(args, shortopts, longopts=[])
+
+            参数args：一般是sys.argv[1:]。过滤掉sys.argv[0]，它是执行脚本的名字，不算做命令行参数。
+            参数shortopts：短格式分析串。例如："hp:i:"，h后面没有冒号，表示后面不带参数；p和i后面带有冒号，表示后面带参数。
+            参数longopts：长格式分析串列表。例如：["help", "ip=", "port="]，help后面没有等号，表示后面不带参数；ip和port后面带冒号，表示后面带参数。
+
+            返回值options是以元组为元素的列表，每个元组的形式为：(选项串, 附加参数)，如：('-i', '192.168.0.1')
+            返回值args是个列表，其中的元素是那些不含'-'或'--'的参数。
+        """
+        opts, args = getopt.getopt(argv, "hu:p:", ["help", "username=", "password="])
+    except getopt.GetoptError:
+        print('Error: test_arg.py -u <username> -p <password>')
+        print('   or: test_arg.py --username=<username> --password=<password>')
+        sys.exit(2)
+
+    # 处理 返回值options是以元组为元素的列表。
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            print('baidu_download.py -u <username> -p <password>')
+            print('or: test_arg.py --username=<username> --password=<password>')
+            sys.exit()
+        elif opt in ("-u", "--username"):
+            username = arg
+        elif opt in ("-p", "--password"):
+            password = arg
+    print('username为：', username)
+    print('password为：', password)
+
+    # 打印 返回值args列表，即其中的元素是那些不含'-'或'--'的参数。
+    for i in range(0, len(args)):
+        print('参数 %s 为：%s' % (i + 1, args[i]))
+
+
+main(sys.argv[1:])
+exit('sss')
 def save_cookies(requests_cookiejar, filename):
     with open(filename, 'wb') as f:
         pickle.dump(requests_cookiejar, f, 0)
@@ -27,6 +71,7 @@ def isElementExist(css):
     except:
         return False
 
+
 def isElementExistByXPath(xpath):
     try:
         driver.find_element_by_xpath(xpath)
@@ -34,14 +79,21 @@ def isElementExistByXPath(xpath):
     except:
         return False
 
-# 链接:https://pan.baidu.com/s/1-EDGBSx4c8SNt4o_aeuJ6Q  密码:62s9
-# 链接:https://pan.baidu.com/s/1R-8Rk-ffh5H9HZ7xtv8ESw  密码:dkqg
+
 url = 'https://pan.baidu.com/share/init?surl=QNooYs0oK57sO3qZmoVjRw'
 tqm = 'f06r'
 tqmCssId = 'ktlJmA'
 clickName = 'ivirlGXq'
 cookies_file = '/Users/zhongsheng/test/baidu.cookies'
-driver = webdriver.Chrome(ChromeDriverManager().install())
+
+#创建下载目录
+urlArr = url.rsplit('/', 1)
+downloadUrl = './download/' + urlArr[1]
+chromeOptions = webdriver.ChromeOptions()
+prefs = {"download.default_directory": downloadUrl}
+chromeOptions.add_experimental_option("prefs", prefs)
+#初始化浏览器
+driver = webdriver.Chrome(ChromeDriverManager().install(), options=chromeOptions)
 
 driver.get(url)
 
@@ -90,18 +142,22 @@ if hasCheckAll is True:
 
 time.sleep(1)
 
-#点击下载文件
+# 点击下载文件
 driver.find_element_by_xpath("//a[@data-button-id='b3']").click()
-
 
 ## 是否是需要输入验证码
 time.sleep(2)
 isYzm = isElementExistByXPath("//img[@class='img-code']")
 
 if isYzm is True:
-
     for a in range(100):
         time.sleep(2)
+        try:
+            elemYzm = driver.find_element_by_xpath("//input[@class='input-code']")
+            elemYzm.clear()
+        except Exception as e:
+            print("已经验证成功")
+            break
         img = driver.find_element_by_xpath("//img[@class='img-code']").get_attribute('src')
         urllib.request.urlretrieve(img, '23.jpeg')
         time.sleep(2)
@@ -118,11 +174,6 @@ if isYzm is True:
         bodys['IMAGE'] = contents
         bodys['IMAGE_TYPE'] = '0'
 
-        # 启用URL方式进行识别
-        # 内容数据类型是图像文件URL链接
-        # bodys['IMAGE'] = '图片URL链接'
-        # bodys['IMAGE_TYPE'] = '1'
-
         post_data = urllib.parse.urlencode(bodys).encode('utf-8')
         request = urllib.request.Request(url, post_data)
         request.add_header('Authorization', 'APPCODE ' + appcode)
@@ -132,16 +183,10 @@ if isYzm is True:
         yzm = ''
         if (content):
             print(content.decode('utf-8'))
-            ss = content.decode("utf8")
-            print(ss)
-
-            ss1 = json.loads(ss)
-            aa = ss1['VERIFY_CODE_ENTITY']['VERIFY_CODE']
-            # aa = ss1['prism_wordsInfo'][0]['word']
-            yzm = re.sub('\s', '', aa)
-
-            # print(strs['words_result']['words'])
-        # driver.find_element_by_xpath("//span[@class='text']").click()
+            result = content.decode("utf8")
+            res = json.loads(result)
+            res1 = res['VERIFY_CODE_ENTITY']['VERIFY_CODE']
+            yzm = re.sub('\s', '', res1)
         time.sleep(1)
         elemYzm = driver.find_element_by_xpath("//input[@class='input-code']")
         elemYzm.clear()
@@ -149,29 +194,23 @@ if isYzm is True:
 
         time.sleep(1)
         print('#############点击')
-        # driver.find_element_by_xpath("//a[@class='underline']").click()
         driver.find_element_by_link_text('确定').click()
-
         print('#############')
         time.sleep(1)
-        # driver.find_element_by_link_text('换一张').click()
 
-
-# obj = driver.switch_to.alert
 time.sleep(2)
-# obj.accept()
-# dialog_box = driver.switch_to.alert
-dialog_box = driver.switch_to.alert()
-# dialog_box = driver.switchTo().alert()
-# dialog_box = driver.switch_to_alert()
-'''添加等待时间'''
-time.sleep(2)
-'''获取对话框的内容'''
-# 打印警告对话框内容
-print(dialog_box.text)
-'''点击【确认】显示"您为何如此？"'''
-dialog_box.accept()  # 接受弹窗
 
+try:
+    dialog_box = driver.switch_to.alert
+    print(dialog_box.text)
+    ## 接受弹窗
+    dialog_box.accept()
+except Exception as e:
+    print("不需要确定")
+
+time.sleep(5)
+print('退出')
+driver.quit()
 # 开始登陆
 # time.sleep(2)
 # driver.find_element_by_id("TANGRAM__PSP_10__footerULoginBtn").click()

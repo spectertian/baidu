@@ -47,7 +47,6 @@ cookies_file = '/Users/zhongsheng/test/baidu.cookies'
 urlArr = url.rsplit('/', 1)
 downloadUrl = '/Users/zhongsheng/PycharmProjects/baidu2/' + urlArr[1]
 print(downloadUrl)
-# exit()
 
 chromeOptions = webdriver.ChromeOptions()
 prefs = {"download.default_directory": downloadUrl}
