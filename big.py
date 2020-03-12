@@ -67,7 +67,7 @@ except ValueError:
 # print(info);
 # if info == '登录':
 
-## 点击下载
+## 输入验证码跳转到 下载页面
 elem = driver.find_element_by_id(tqmCssId)
 elem.send_keys(tqm)
 elements = driver.find_element_by_id(clickName)
@@ -82,105 +82,79 @@ try:
 except ValueError:
     driver.quit()
 
-
-# hasCheckAll = isElementExistByXPath("//div[@node-type='fydGNC']")
-
-# print(hasCheckAll)
-#
-# if hasCheckAll is True:
+# 判断是不是多选文件
 time.sleep(1)
-
 hasCheckAll = isElementExistByXPath("//div[@node-type='fydGNC']")
-
-print(hasCheckAll)
-
 if hasCheckAll is True:
     driver.find_element_by_xpath("//div[@node-type='fydGNC']").click()
 
 time.sleep(1)
 
+#点击下载文件
 driver.find_element_by_xpath("//a[@data-button-id='b3']").click()
 
-# element.click()
 
-# driver.find_element_by_xpath("//a[@data-button-id='b3']").click()
-
-exit('sss')
-# driver.find_element_by_xpath("//div[@node-type='fydGNC']").click()
+## 是否是需要输入验证码
 time.sleep(2)
+isYzm = isElementExistByXPath("//img[@class='img-code']")
 
-time.sleep(10)
+if isYzm is True:
 
-#
-# for a in range(100):
-#     time.sleep(2)
-#     img = driver.find_element_by_xpath("//img[@class='img-code']").get_attribute('src')
-#     urllib.request.urlretrieve(img, '23.jpeg')
-#     # exit('aa')
-#     time.sleep(2)
-#     # encodestr = nal.getImg('23.jpeg')
-#     # dict = {'img': encodestr}
-#     # yzm = nal.getYzm(dict)
-#     # print(yzm)
-#
-#     # API产品路径
-#     host = 'https://codevirify.market.alicloudapi.com'
-#     path = '/icredit_ai_image/verify_code/v1'
-#     # 阿里云APPCODE
-#     appcode = '712d406485a44077a7e72d7b03a2af36'
-#     bodys = {}
-#     url = host + path
-#
-#     # 内容数据类型，如：0，则表示BASE64编码；1，则表示图像文件URL链接
-#
-#     # 启用BASE64编码方式进行识别
-#     # 内容数据类型是BASE64编码
-#     # f = open(r'23.jpeg', 'rb')
-#     # contents = base64.b64encode(f.read())
-#     # f.close()
-#     with open('23.jpeg', 'rb') as f:  # 以二进制读取本地图片
-#         data = f.read()
-#         contents = str(base64.b64encode(data), 'utf-8')
-#     bodys['IMAGE'] = contents
-#     bodys['IMAGE_TYPE'] = '0'
-#
-#     # 启用URL方式进行识别
-#     # 内容数据类型是图像文件URL链接
-#     # bodys['IMAGE'] = '图片URL链接'
-#     # bodys['IMAGE_TYPE'] = '1'
-#
-#     post_data = urllib.parse.urlencode(bodys).encode('utf-8')
-#     request = urllib.request.Request(url, post_data)
-#     request.add_header('Authorization', 'APPCODE ' + appcode)
-#     request.add_header('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
-#     response = urllib.request.urlopen(request)
-#     content = response.read()
-#     yzm = ''
-#     if (content):
-#         print(content.decode('utf-8'))
-#         ss = content.decode("utf8")
-#         print(ss)
-#
-#         ss1 = json.loads(ss)
-#         aa = ss1['VERIFY_CODE_ENTITY']['VERIFY_CODE']
-#         # aa = ss1['prism_wordsInfo'][0]['word']
-#         yzm = re.sub('\s', '', aa)
-#
-#         # print(strs['words_result']['words'])
-#     # driver.find_element_by_xpath("//span[@class='text']").click()
-#     time.sleep(1)
-#     elemYzm = driver.find_element_by_xpath("//input[@class='input-code']")
-#     elemYzm.clear()
-#     elemYzm.send_keys(yzm)
-#
-#     time.sleep(1)
-#     print('#############点击')
-#     # driver.find_element_by_xpath("//a[@class='underline']").click()
-#     driver.find_element_by_link_text('确定').click()
-#
-#     print('#############')
-#     time.sleep(1)
-#     # driver.find_element_by_link_text('换一张').click()
+    for a in range(100):
+        time.sleep(2)
+        img = driver.find_element_by_xpath("//img[@class='img-code']").get_attribute('src')
+        urllib.request.urlretrieve(img, '23.jpeg')
+        time.sleep(2)
+        # API产品路径
+        host = 'https://codevirify.market.alicloudapi.com'
+        path = '/icredit_ai_image/verify_code/v1'
+        # 阿里云APPCODE
+        appcode = '712d406485a44077a7e72d7b03a2af36'
+        bodys = {}
+        url = host + path
+        with open('23.jpeg', 'rb') as f:  # 以二进制读取本地图片
+            data = f.read()
+            contents = str(base64.b64encode(data), 'utf-8')
+        bodys['IMAGE'] = contents
+        bodys['IMAGE_TYPE'] = '0'
+
+        # 启用URL方式进行识别
+        # 内容数据类型是图像文件URL链接
+        # bodys['IMAGE'] = '图片URL链接'
+        # bodys['IMAGE_TYPE'] = '1'
+
+        post_data = urllib.parse.urlencode(bodys).encode('utf-8')
+        request = urllib.request.Request(url, post_data)
+        request.add_header('Authorization', 'APPCODE ' + appcode)
+        request.add_header('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+        response = urllib.request.urlopen(request)
+        content = response.read()
+        yzm = ''
+        if (content):
+            print(content.decode('utf-8'))
+            ss = content.decode("utf8")
+            print(ss)
+
+            ss1 = json.loads(ss)
+            aa = ss1['VERIFY_CODE_ENTITY']['VERIFY_CODE']
+            # aa = ss1['prism_wordsInfo'][0]['word']
+            yzm = re.sub('\s', '', aa)
+
+            # print(strs['words_result']['words'])
+        # driver.find_element_by_xpath("//span[@class='text']").click()
+        time.sleep(1)
+        elemYzm = driver.find_element_by_xpath("//input[@class='input-code']")
+        elemYzm.clear()
+        elemYzm.send_keys(yzm)
+
+        time.sleep(1)
+        print('#############点击')
+        # driver.find_element_by_xpath("//a[@class='underline']").click()
+        driver.find_element_by_link_text('确定').click()
+
+        print('#############')
+        time.sleep(1)
+        # driver.find_element_by_link_text('换一张').click()
 
 
 # obj = driver.switch_to.alert
