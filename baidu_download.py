@@ -16,49 +16,44 @@ import re
 import sys
 import getopt
 
+tqm = url = task_id = ""
 
-def main(argv):
-    tqm = ""
-    url = ""
-    task_id = ""
+
+def inputArg(argv):
+    global tqm, url, task_id
 
     try:
-        """
-            options, args = getopt.getopt(args, shortopts, longopts=[])
-            参数args：一般是sys.argv[1:]。过滤掉sys.argv[0]，它是执行脚本的名字，不算做命令行参数。
-            参数shortopts：短格式分析串。例如："hp:i:"，h后面没有冒号，表示后面不带参数；p和i后面带有冒号，表示后面带参数。
-            参数longopts：长格式分析串列表。例如：["help", "ip=", "port="]，help后面没有等号，表示后面不带参数；ip和port后面带冒号，表示后面带参数。
-
-            返回值options是以元组为元素的列表，每个元组的形式为：(选项串, 附加参数)，如：('-i', '192.168.0.1')
-            返回值args是个列表，其中的元素是那些不含'-'或'--'的参数。
-        """
-        opts, args = getopt.getopt(argv, "hu:p:", ["help", "username=", "password="])
+        opts, args = getopt.getopt(argv, "ht:u:i:", ["help", "tqm=", "url=", "task_id="])
     except getopt.GetoptError:
-        print('Error: test_arg.py -u <username> -p <password>')
-        print('   or: test_arg.py --username=<username> --password=<password>')
+        print('Erro baidu_download.py -t <tqm> -u <url> -i <task_id>')
+        print('or baidu_download.py --tqm=<tqm> --url=<url> --task_id=<task_id>')
         sys.exit(2)
 
     # 处理 返回值options是以元组为元素的列表。
     for opt, arg in opts:
         if opt in ("-h", "--help"):
-            print('baidu_download.py -u <username> -p <password>')
-            print('or: test_arg.py --username=<username> --password=<password>')
+            print('baidu_download.py -t <tqm> -u <url> -i <task_id>')
+            print('or baidu_download.py --tqm=<tqm> --url=<url> --task_id=<task_id>')
             sys.exit()
-        elif opt in ("-u", "--username"):
-            username = arg
-        elif opt in ("-p", "--password"):
-            password = arg
-    print('username为：', username)
-    print('password为：', password)
-
-    # 打印 返回值args列表，即其中的元素是那些不含'-'或'--'的参数。
-    for i in range(0, len(args)):
-        print('参数 %s 为：%s' % (i + 1, args[i]))
+        elif opt in ('-t', '--tqm'):
+            tqm = arg
+        elif opt in ('-u', '--url'):
+            url = arg
+        elif opt in ('-i', '--task_id'):
+            task_id = arg
 
 
-main(sys.argv[1:])
-exit('sss')
+inputArg(sys.argv[1:])
 
+print('url为：', url)
+print('tqm为：', tqm)
+print('task_id为：', task_id)
+
+
+# exit()
+# python baidu_download.py -u https://pan.baidu.com/share/init?surl=QNooYs0oK57sO3qZmoVjRw  -t f06r -i 1323
+#链接: https://pan.baidu.com/s/1KxdveBv3Rza7Yhw178K27g 提取码: xjsw 复制这段内容后打开百度网盘手机App，操作更方便哦
+# python baidu_download.py -u https://pan.baidu.com/s/1KxdveBv3Rza7Yhw178K27g   -t xjsw -i 1323
 
 def save_cookies(requests_cookiejar, filename):
     with open(filename, 'wb') as f:
@@ -81,33 +76,33 @@ def isElementExistByXPath(xpath):
         return False
 
 
-url = 'https://pan.baidu.com/share/init?surl=QNooYs0oK57sO3qZmoVjRw'
-tqm = 'f06r'
 tqmCssId = 'ktlJmA'
 clickName = 'ivirlGXq'
+# cookies 文件保存地址
 cookies_file = '/Users/zhongsheng/test/baidu.cookies'
 
 # 创建下载目录
 urlArr = url.rsplit('/', 1)
 downloadUrl = './download/' + urlArr[1]
 chromeOptions = webdriver.ChromeOptions()
-prefs = {"download.default_directory": downloadUrl}
+prefs = {'profile.default_content_settings.popups': 0, "download.default_directory": downloadUrl}
 chromeOptions.add_experimental_option("prefs", prefs)
 # 初始化浏览器
 driver = webdriver.Chrome(ChromeDriverManager().install(), options=chromeOptions)
 
 driver.get(url)
 
-##写入cookies
-cookies = pickle.load(open(cookies_file, "rb"))
-for cookie in cookies:
-    print(cookie)
-    if 'expiry' in cookie:
-        del cookie['expiry']
-    driver.add_cookie(cookie)
+# ##写入cookies
+# cookies = pickle.load(open(cookies_file, "rb"))
+# for cookie in cookies:
+#     print(cookie)
+#     if 'expiry' in cookie:
+#         del cookie['expiry']
+#     driver.add_cookie(cookie)
 
 ## 页面刷新授权
-driver.refresh()
+# driver.refresh()
+# driver.get(url)
 
 try:
     element = WebDriverWait(driver, 2).until(
@@ -125,6 +120,8 @@ elem = driver.find_element_by_id(tqmCssId)
 elem.send_keys(tqm)
 elements = driver.find_element_by_id(clickName)
 driver.execute_script("arguments[0].click();", elements)
+driver.refresh()
+
 
 # 跳转页面等待
 try:
@@ -134,6 +131,16 @@ try:
     )
 except ValueError:
     driver.quit()
+
+
+##写入cookies
+cookies = pickle.load(open(cookies_file, "rb"))
+for cookie in cookies:
+    print(cookie)
+    if 'expiry' in cookie:
+        del cookie['expiry']
+    driver.add_cookie(cookie)
+
 
 # 判断是不是多选文件
 time.sleep(1)
