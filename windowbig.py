@@ -1,19 +1,22 @@
 # coding=utf-8
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.firefox import GeckoDriverManager
 
 import time
 import pickle
 import base64
 import urllib.request
+import urllib.parse
 import json
 import re
+
+# 保存cookies
 def save_cookies(requests_cookiejar, filename):
     with open(filename, 'wb') as f:
         pickle.dump(requests_cookiejar, f, 0)
 # 链接:https://pan.baidu.com/s/1-EDGBSx4c8SNt4o_aeuJ6Q  密码:62s9
-# url = 'https://pan.baidu.com/s/1U8STr4KZsDVTVCejY6_FtA'
+# 链接:https://pan.baidu.com/s/1R-8Rk-ffh5H9HZ7xtv8ESw  密码:dkqg
+
 url = 'https://pan.baidu.com/s/1wXE1tFsl2lI18lylB6I_bQ'
 tqm = 'nvwx'
 # tqm = 'cyev'
@@ -21,9 +24,7 @@ tqmCssId = 'ktlJmA'
 clickName = 'ivirlGXq'
 cookies_file = 'baidu.cookies'
 driver = webdriver.Chrome(ChromeDriverManager().install())
-# driver = webdriver.Firefox(executable_path=GeckoDriverManager().install())
 
-# 链接:https://pan.baidu.com/s/1R-8Rk-ffh5H9HZ7xtv8ESw  密码:dkqg
 driver.get(url)
 
 cookies = pickle.load(open(cookies_file, "rb"))

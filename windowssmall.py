@@ -2,7 +2,6 @@
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.firefox import GeckoDriverManager
 
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
@@ -23,7 +22,7 @@ import time
 import pickle
 import urllib.parse
 import re
-import nal
+# import nal
 
 
 
