@@ -22,7 +22,7 @@ import time
 import pickle
 import urllib.parse
 import re
-import nal
+# import nal
 
 
 
@@ -37,9 +37,9 @@ def save_cookies(requests_cookiejar, filename):
     with open(filename, 'wb') as f:
         pickle.dump(requests_cookiejar, f, 0)
 
-
-url = 'https://pan.baidu.com/s/1n890K1uMotIasOIwEQ5neQ'
-tqm = '4cau'
+#链接: https://pan.baidu.com/s/1nrCL8vY61aKApKhrkwJd9A 提取码: gbq7 复制这段内容后打开百度网盘手机App，操作更方便哦
+url = 'https://pan.baidu.com/s/1nrCL8vY61aKApKhrkwJd9A'
+tqm = 'gbq7'
 tqmCssId = 'ktlJmA'
 clickName = 'ivirlGXq'
 cookies_file = '/Users/zhongsheng/test/baidu.cookies'
