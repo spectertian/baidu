@@ -13,19 +13,18 @@ import base64
 import json
 import re
 
-
 import sys
 import getopt
 
 
 def main(argv):
-    username = ""
-    password = ""
+    tqm = ""
+    url = ""
+    task_id = ""
 
     try:
         """
             options, args = getopt.getopt(args, shortopts, longopts=[])
-
             参数args：一般是sys.argv[1:]。过滤掉sys.argv[0]，它是执行脚本的名字，不算做命令行参数。
             参数shortopts：短格式分析串。例如："hp:i:"，h后面没有冒号，表示后面不带参数；p和i后面带有冒号，表示后面带参数。
             参数longopts：长格式分析串列表。例如：["help", "ip=", "port="]，help后面没有等号，表示后面不带参数；ip和port后面带冒号，表示后面带参数。
@@ -59,6 +58,8 @@ def main(argv):
 
 main(sys.argv[1:])
 exit('sss')
+
+
 def save_cookies(requests_cookiejar, filename):
     with open(filename, 'wb') as f:
         pickle.dump(requests_cookiejar, f, 0)
@@ -86,13 +87,13 @@ tqmCssId = 'ktlJmA'
 clickName = 'ivirlGXq'
 cookies_file = '/Users/zhongsheng/test/baidu.cookies'
 
-#创建下载目录
+# 创建下载目录
 urlArr = url.rsplit('/', 1)
 downloadUrl = './download/' + urlArr[1]
 chromeOptions = webdriver.ChromeOptions()
 prefs = {"download.default_directory": downloadUrl}
 chromeOptions.add_experimental_option("prefs", prefs)
-#初始化浏览器
+# 初始化浏览器
 driver = webdriver.Chrome(ChromeDriverManager().install(), options=chromeOptions)
 
 driver.get(url)
